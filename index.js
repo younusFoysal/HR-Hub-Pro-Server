@@ -158,6 +158,7 @@ async function run() {
             res.send(result)
         })
 
+
         // get all users data from db
         app.get('/users', async (req, res) => {
             const result = await usersCollection.find().toArray()
@@ -171,15 +172,28 @@ async function run() {
             res.send(result)
         })
 
+        //update a user role, isverify
+        app.patch('/users/update/:email', async (req, res) => {
+            const email = req.params.email
+            const user = req.body
+            const query = { email }
+            const updateDoc = {
+                $set: { ...user, timestamp: Date.now() },
+            }
+            console.log(updateDoc)
+            const result = await usersCollection.updateOne(query, updateDoc)
+            res.send(result)
+        })
+
 
         // TODO: Work DB
         // Get all works from db
         app.get('/works', async (req, res) => {
             const category = req.query.category
             console.log(category)
-            let query = {}
-            if (category && category !== 'null') query = { category }
-            const result = await worksCollection.find(query).toArray()
+            //let query = {}
+            //if (category && category !== 'null') query = { category }
+            const result = await worksCollection.find().toArray()
             res.send(result)
         })
 
