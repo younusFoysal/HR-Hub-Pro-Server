@@ -9,12 +9,11 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const port = process.env.PORT || 5000
 
 
-
-// middleware
 const corsOptions = {
     origin: [
         'http://localhost:5173',
-        'http://localhost:5174'
+        'http://localhost:5174',
+        'https://hr-hub-pro.web.app'
     ],
     credentials: true,
     optionSuccessStatus: 200,
@@ -24,7 +23,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 
-// Verify Token Middleware
+
 const verifyToken = async (req, res, next) => {
     const token = req.cookies?.token
     console.log(token)
@@ -58,7 +57,7 @@ async function run() {
         const worksCollection = db.collection('works')
 
 
-        // verify Admin middleware
+        // verify Admin 
         const verifyAdmin = async (req, res, next) => {
             console.log('hello')
             const user = req.user
@@ -71,7 +70,7 @@ async function run() {
             next()
         }
 
-        // verify host middleware
+        // verify host 
         const verifyHost = async (req, res, next) => {
             console.log('hello')
             const user = req.user
@@ -211,7 +210,7 @@ async function run() {
 
 
         // Send a ping to confirm a successful connection
-        await client.db('admin').command({ ping: 1 })
+        // await client.db('admin').command({ ping: 1 })
         console.log(
             'Pinged your deployment. You successfully connected to MongoDB!'
         )
