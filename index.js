@@ -252,13 +252,44 @@ async function run() {
             res.send(result)
         })
 
-        // get all booking for a guest
+        // get all salary for a hr
         app.get('/salary',  async (req, res) => {
-            const email = req.params.email
+            //const email = req.params.email
             //const query = { 'guest.email': email }
             const result = await salaryCollection.find().toArray()
             res.send(result)
         })
+
+        // salary month and year of an employee
+        app.get('/salarymonthyear/:email', async (req, res) => {
+            try {
+                const email = req.params.email;
+                const query = { email: email };
+
+                // Fetch all salary records for the given email
+                const results = await salaryCollection.find(query).toArray();
+
+                // Extract the month and year fields and filter out duplicates
+                const monthYearSet = new Set();
+                const monthYearArray = results.map(result => ({
+                    month: result.month,
+                    year: result.year
+                })).filter(item => {
+                    const key = `${item.month}-${item.year}`;
+                    if (!monthYearSet.has(key)) {
+                        monthYearSet.add(key);
+                        return true;
+                    }
+                    return false;
+                });
+
+                // Send the response
+                res.send(monthYearArray);
+            } catch (error) {
+                res.status(500).send({ message: 'An error occurred', error: error.message });
+            }
+        });
+
 
 
 
