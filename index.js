@@ -56,6 +56,7 @@ async function run() {
         const db = client.db('hrhubDB')
         const usersCollection = db.collection('users')
         const worksCollection = db.collection('works')
+        const salaryCollection = db.collection('salary')
 
 
         // verify Admin 
@@ -114,6 +115,25 @@ async function run() {
             } catch (err) {
                 res.status(500).send(err)
             }
+        })
+
+        // create-payment-intent
+        app.post('/create-payment-intent', async (req, res) => {
+            const salary = req.body.salary
+            const salaryInCent = parseFloat(salary) * 100
+            if (!salary || salaryInCent < 1) return
+            // generate clientSecret
+            const { client_secret } = await stripe.paymentIntents.create({
+                amount: salaryInCent,
+                currency: 'usd',
+                payment_method_types: ['card'],
+                // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+                // automatic_payment_methods: {
+                //   enabled: true,
+                // },
+            })
+            // send client secret as response
+            res.send({ clientSecret: client_secret })
         })
 
 
@@ -214,6 +234,31 @@ async function run() {
                 res.send(result)
             }
         )
+
+        // TODO: Salary or payment api
+        // Save a booking data in db
+        app.post('/paysalary',  async (req, res) => {
+            const salaryData = req.body
+            // save room booking info
+            const result = await salaryCollection.insertOne(salaryData)
+            res.send(result)
+        })
+
+        // get all booking for a guest
+        app.get('/my-salary/:email',  async (req, res) => {
+            const email = req.params.email
+            const query = { 'guest.email': email }
+            const result = await salaryCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        // get all booking for a guest
+        app.get('/salary',  async (req, res) => {
+            const email = req.params.email
+            //const query = { 'guest.email': email }
+            const result = await salaryCollection.find().toArray()
+            res.send(result)
+        })
 
 
 
