@@ -244,10 +244,10 @@ async function run() {
             res.send(result)
         })
 
-        // get all booking for a guest
+        // get all salary for a guest
         app.get('/my-salary/:email',  async (req, res) => {
             const email = req.params.email
-            const query = { 'guest.email': email }
+            const query = { email }
             const result = await salaryCollection.find(query).toArray()
             res.send(result)
         })
