@@ -291,6 +291,31 @@ async function run() {
         });
 
 
+        // salary vs month and year api for chart
+        app.get('/salarysummary/:email', async (req, res) => {
+            try {
+                const email = req.params.email;
+                const query = { email: email };
+
+                // Fetch all salary records for the given email
+                const results = await salaryCollection.find(query).toArray();
+
+                // Map the results to extract month, year, and salary, and format the name
+                const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                const salarySummary = results.map(result => ({
+                    name: `${monthNames[result.month - 1]} '${String(result.year).slice(-2)}`,
+                    salary: result.salary
+                }));
+
+                // Send the response
+                res.send(salarySummary);
+            } catch (error) {
+                res.status(500).send({ message: 'An error occurred', error: error.message });
+            }
+        });
+
+
+
 
 
 
