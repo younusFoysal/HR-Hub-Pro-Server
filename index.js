@@ -118,7 +118,7 @@ async function run() {
         })
 
         // create-payment-intent
-        app.post('/create-payment-intent', async (req, res) => {
+        app.post('/create-payment-intent',verifyToken, async (req, res) => {
             const salary = req.body.salary
             const salaryInCent = parseFloat(salary) * 100
             if (!salary || salaryInCent < 1) return
@@ -173,7 +173,7 @@ async function run() {
         })
 
         // get a user info by email from db
-        app.get('/user/:email', async (req, res) => {
+        app.get('/user/:email', verifyToken, async (req, res) => {
             const email = req.params.email
             const result = await usersCollection.findOne({ email })
             res.send(result)
@@ -181,20 +181,20 @@ async function run() {
 
 
         // get all users data from db
-        app.get('/users', async (req, res) => {
+        app.get('/users', verifyToken,  async (req, res) => {
             const result = await usersCollection.find().toArray()
             res.send(result)
         })
 
         // get employee users data from db
-        app.get('/users-employee', async (req, res) => {
+        app.get('/users-employee', verifyToken, async (req, res) => {
             const query = {role: "employee"}
             const result = await usersCollection.find(query).toArray()
             res.send(result)
         })
 
         // get verified employee users data from db
-        app.get('/verified-employee', async (req, res) => {
+        app.get('/verified-employee', verifyToken, async (req, res) => {
             const query = {isVerfied: true}
             const result = await usersCollection.find(query).toArray()
             res.send(result)
@@ -203,7 +203,7 @@ async function run() {
 
 
         //update a user role, isverify
-        app.patch('/users/update/:email', async (req, res) => {
+        app.patch('/users/update/:email', verifyToken, async (req, res) => {
             const email = req.params.email
             const user = req.body
             const query = { email }
@@ -218,7 +218,7 @@ async function run() {
 
         // TODO: Work DB
         // Get all works from db
-        app.get('/works', async (req, res) => {
+        app.get('/works',  verifyToken, async (req, res) => {
             const category = req.query.category
             console.log(category)
             //let query = {}
@@ -228,14 +228,14 @@ async function run() {
         })
 
         // Save a work data in db
-        app.post('/work', async (req, res) => {
+        app.post('/work', verifyToken, async (req, res) => {
             const workData = req.body
             const result = await worksCollection.insertOne(workData)
             res.send(result)
         })
 
         // get all works for employee
-        app.get('/my-works/:email', async (req, res) => {
+        app.get('/my-works/:email', verifyToken, async (req, res) => {
                 const email = req.params.email
 
                 let query = { 'employee.email': email }
@@ -246,7 +246,7 @@ async function run() {
 
         // TODO: Salary or payment api
         // Save a booking data in db
-        app.post('/paysalary',  async (req, res) => {
+        app.post('/paysalary', verifyToken,  async (req, res) => {
             const salaryData = req.body
             // save room booking info
             const result = await salaryCollection.insertOne(salaryData)
@@ -254,7 +254,7 @@ async function run() {
         })
 
         // get all salary for a guest
-        app.get('/my-salary/:email',  async (req, res) => {
+        app.get('/my-salary/:email', verifyToken,  async (req, res) => {
             const email = req.params.email
             const query = { email }
             const result = await salaryCollection.find(query).toArray()
@@ -262,7 +262,7 @@ async function run() {
         })
 
         // get all salary for a hr
-        app.get('/salary',  async (req, res) => {
+        app.get('/salary', verifyToken,  async (req, res) => {
             //const email = req.params.email
             //const query = { 'guest.email': email }
             const result = await salaryCollection.find().toArray()
@@ -270,7 +270,7 @@ async function run() {
         })
 
         // salary month and year of an employee
-        app.get('/salarymonthyear/:email', async (req, res) => {
+        app.get('/salarymonthyear/:email', verifyToken, async (req, res) => {
             try {
                 const email = req.params.email;
                 const query = { email: email };
@@ -301,7 +301,7 @@ async function run() {
 
 
         // salary vs month and year api for chart
-        app.get('/salarysummary/:email', async (req, res) => {
+        app.get('/salarysummary/:email', verifyToken, async (req, res) => {
             try {
                 const email = req.params.email;
                 const query = { email: email };
@@ -322,14 +322,6 @@ async function run() {
                 res.status(500).send({ message: 'An error occurred', error: error.message });
             }
         });
-
-
-
-
-
-
-
-
 
 
 
