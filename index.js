@@ -193,6 +193,15 @@ async function run() {
             res.send(result)
         })
 
+        // get verified employee users data from db
+        app.get('/verified-employee', async (req, res) => {
+            const query = {isVerfied: true}
+            const result = await usersCollection.find(query).toArray()
+            res.send(result)
+        })
+
+
+
         //update a user role, isverify
         app.patch('/users/update/:email', async (req, res) => {
             const email = req.params.email
