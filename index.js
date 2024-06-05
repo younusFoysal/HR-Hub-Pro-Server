@@ -57,6 +57,8 @@ async function run() {
         const usersCollection = db.collection('users')
         const worksCollection = db.collection('works')
         const salaryCollection = db.collection('salary')
+        const reviewCollection = db.collection('reviews')
+        const messageCollection = db.collection('messages')
 
 
         // verify Admin 
@@ -173,7 +175,7 @@ async function run() {
         })
 
         // get a user info by email from db
-        app.get('/user/:email', verifyToken, async (req, res) => {
+        app.get('/user/:email', async (req, res) => {
             const email = req.params.email
             const result = await usersCollection.findOne({ email })
             res.send(result)
@@ -245,7 +247,7 @@ async function run() {
         )
 
         // TODO: Salary or payment api
-        // Save a booking data in db
+        // Save a salary data in db
         app.post('/paysalary', verifyToken,  async (req, res) => {
             const salaryData = req.body
             // save room booking info
@@ -322,6 +324,27 @@ async function run() {
                 res.status(500).send({ message: 'An error occurred', error: error.message });
             }
         });
+
+        // TODO: Reviews
+        // get all reviews data from db
+        app.get('/reviews',  async (req, res) => {
+            const result = await reviewCollection.find().toArray()
+            res.send(result)
+        })
+
+        // TODO: Contact Messages
+        //get all Messages data from db
+        app.get('/contact',  async (req, res) => {
+            const result = await messageCollection.find().toArray()
+            res.send(result)
+        })
+
+        // Save a msg data in db
+        app.post('/contact',  async (req, res) => {
+            const messageData = req.body
+            const result = await messageCollection.insertOne(messageData)
+            res.send(result)
+        })
 
 
 
