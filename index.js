@@ -100,6 +100,23 @@ async function run() {
             next()
         }
 
+        // verifyAdminOrHr
+        const verifyAdminOrHr = async (req, res, next) => {
+            console.log('hello from Admin OR HR');
+            const user = req.user;
+            const query = { email: user?.email };
+            const result = await usersCollection.findOne(query);
+            console.log(result?.role);
+
+            if (!result || (result.role !== 'admin' && result.role !== 'hr')) {
+                return res.status(401).send({ message: 'unauthorized access!!' });
+            }
+
+            next();
+        };
+
+
+
         // auth related api
         app.post('/jwt', async (req, res) => {
             const user = req.body
@@ -197,7 +214,7 @@ async function run() {
 
 
         // get all users data from db
-        app.get('/users', verifyToken, (verifyAdmin || verifyHr), async (req, res) => {
+        app.get('/users', verifyToken, verifyAdminOrHr, async (req, res) => {
             const result = await usersCollection.find().toArray()
             res.send(result)
         })
@@ -219,7 +236,7 @@ async function run() {
 
 
         //update a user role, isverify
-        app.patch('/users/update/:email', verifyToken, (verifyAdmin || verifyHr), async (req, res) => {
+        app.patch('/users/update/:email', verifyToken, verifyAdminOrHr, async (req, res) => {
             const email = req.params.email
             const user = req.body
             const query = { email }
@@ -284,7 +301,7 @@ async function run() {
         })
 
         // salary month and year of an employee
-        app.get('/salarymonthyear/:email', verifyToken, (verifyAdmin || verifyHr), async (req, res) => {
+        app.get('/salarymonthyear/:email', verifyToken, verifyAdminOrHr, async (req, res) => {
             try {
                 const email = req.params.email;
                 const query = { email: email };
