@@ -407,11 +407,11 @@ async function run() {
                 const totalHr = hrEmployees.length;
                 const messages = await messageCollection.find().toArray();
                 const totalMessages = messages.length;
-                const hrStats = [{
+                const hrStats = {
                     totalEmployees: totalEmployees,
                     totalhr: totalHr,
                     totalmsg: totalMessages
-                }];
+                };
 
                 res.send(hrStats);
             } catch (error) {
