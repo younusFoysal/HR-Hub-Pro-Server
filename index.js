@@ -237,9 +237,8 @@ async function run() {
         })
 
         // get all works for employee
-        app.get('/my-works/:email', verifyToken, async (req, res) => {
+        app.get('/my-works/:email', async (req, res) => {
                 const email = req.params.email
-
                 let query = { 'employee.email': email }
                 const result = await worksCollection.find(query).toArray()
                 res.send(result)
@@ -345,6 +344,41 @@ async function run() {
             const result = await messageCollection.insertOne(messageData)
             res.send(result)
         })
+
+        // TODO: STATS
+        app.get('/userStat/:email', async (req, res) => {
+            const email = req.params.email;
+
+            try {
+                // Query to get all works for the user
+                const worksQuery = { 'employee.email': email };
+                const works = await worksCollection.find(worksQuery).toArray();
+
+                // Calculate total works and total work hours
+                const totalWorks = works.length;
+                const totalWorkHours = works.reduce((acc, work) => acc + work.whrs, 0);
+
+                // Query to get all salary entries for the user
+                const salaryQuery = { email };
+                const salaries = await salaryCollection.find(salaryQuery).toArray();
+
+                // Calculate total salary entries
+                const totalSalaryEntries = salaries.length;
+
+                // Prepare the response
+                const userStats = {
+                    totalworks: totalWorks,
+                    totalwhrs: totalWorkHours,
+                    totalsalary: totalSalaryEntries
+                };
+
+                // Send the response
+                res.send(userStats);
+            } catch (error) {
+                console.error('Error fetching user stats:', error);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
 
 
 
