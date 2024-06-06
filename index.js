@@ -189,14 +189,14 @@ async function run() {
         })
 
         // get employee users data from db
-        app.get('/users-employee', verifyToken, async (req, res) => {
+        app.get('/users-employee', async (req, res) => {
             const query = {role: "employee"}
             const result = await usersCollection.find(query).toArray()
             res.send(result)
         })
 
         // get verified employee users data from db
-        app.get('/verified-employee', verifyToken, async (req, res) => {
+        app.get('/verified-employee', async (req, res) => {
             const query = {isVerfied: true}
             const result = await usersCollection.find(query).toArray()
             res.send(result)
@@ -346,33 +346,24 @@ async function run() {
         })
 
         // TODO: STATS
+        // Employee
         app.get('/userStat/:email', async (req, res) => {
             const email = req.params.email;
 
             try {
-                // Query to get all works for the user
                 const worksQuery = { 'employee.email': email };
                 const works = await worksCollection.find(worksQuery).toArray();
-
-                // Calculate total works and total work hours
                 const totalWorks = works.length;
                 const totalWorkHours = works.reduce((acc, work) => acc + work.whrs, 0);
-
-                // Query to get all salary entries for the user
                 const salaryQuery = { email };
                 const salaries = await salaryCollection.find(salaryQuery).toArray();
-
-                // Calculate total salary entries
                 const totalSalaryEntries = salaries.length;
-
-                // Prepare the response
                 const userStats = {
                     totalworks: totalWorks,
                     totalwhrs: totalWorkHours,
                     totalsalary: totalSalaryEntries
                 };
 
-                // Send the response
                 res.send(userStats);
             } catch (error) {
                 console.error('Error fetching user stats:', error);
@@ -381,6 +372,38 @@ async function run() {
         });
 
 
+        // HR stats
+        app.get('/hrStat', verifyToken, async (req, res) => {
+            try {
+                // Query to get all employee users
+                const employeeQuery = { role: "employee" };
+                const employees = await usersCollection.find(employeeQuery).toArray();
+                const totalEmployees = employees.length;
+
+                // Query to get all verified employee users
+                const query = {role: "employee", isVerfied: true}
+                const result = await usersCollection.find(query).toArray()
+                //console.log(result)
+                const totalVerifiedEmployees = result.length;
+
+                // Query to get all works
+                const works = await worksCollection.find().toArray();
+                const totalWorks = works.length;
+
+                // Prepare the response
+                const hrStats = [{
+                    totalEmployees: totalEmployees,
+                    totalverifiedEmployees: totalVerifiedEmployees,
+                    totalWorks: totalWorks
+                }];
+
+                // Send the response
+                res.send(hrStats);
+            } catch (error) {
+                console.error('Error fetching HR stats:', error);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
 
 
         // Send a ping to confirm a successful connection
