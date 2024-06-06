@@ -189,14 +189,14 @@ async function run() {
         })
 
         // get employee users data from db
-        app.get('/users-employee', async (req, res) => {
+        app.get('/users-employee', verifyToken, async (req, res) => {
             const query = {role: "employee"}
             const result = await usersCollection.find(query).toArray()
             res.send(result)
         })
 
         // get verified employee users data from db
-        app.get('/verified-employee', async (req, res) => {
+        app.get('/verified-employee', verifyToken, async (req, res) => {
             const query = {isVerfied: true}
             const result = await usersCollection.find(query).toArray()
             res.send(result)
@@ -237,7 +237,7 @@ async function run() {
         })
 
         // get all works for employee
-        app.get('/my-works/:email', async (req, res) => {
+        app.get('/my-works/:email', verifyToken, async (req, res) => {
                 const email = req.params.email
                 let query = { 'employee.email': email }
                 const result = await worksCollection.find(query).toArray()
@@ -347,7 +347,7 @@ async function run() {
 
         // TODO: STATS
         // Employee
-        app.get('/userStat/:email', async (req, res) => {
+        app.get('/userStat/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
 
             try {
@@ -397,7 +397,7 @@ async function run() {
         });
 
         // Admin stast
-        app.get('/adminStat',  async (req, res) => {
+        app.get('/adminStat', verifyToken, async (req, res) => {
             try {
                 const employeeQuery = { role: "employee" };
                 const employees = await usersCollection.find(employeeQuery).toArray();
