@@ -13,7 +13,7 @@ const corsOptions = {
     origin: [
         'http://localhost:5173',
         'http://localhost:5174',
-        'https://hr-hub-pro.web.app'
+        'https://hr-hub-pro.web.app',
     ],
     credentials: true,
     optionSuccessStatus: 200,
