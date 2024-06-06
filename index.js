@@ -375,35 +375,51 @@ async function run() {
         // HR stats
         app.get('/hrStat', verifyToken, async (req, res) => {
             try {
-                // Query to get all employee users
                 const employeeQuery = { role: "employee" };
                 const employees = await usersCollection.find(employeeQuery).toArray();
                 const totalEmployees = employees.length;
-
-                // Query to get all verified employee users
                 const query = {role: "employee", isVerfied: true}
                 const result = await usersCollection.find(query).toArray()
-                //console.log(result)
                 const totalVerifiedEmployees = result.length;
-
-                // Query to get all works
                 const works = await worksCollection.find().toArray();
                 const totalWorks = works.length;
-
-                // Prepare the response
-                const hrStats = [{
+                const hrStats = {
                     totalEmployees: totalEmployees,
                     totalverifiedEmployees: totalVerifiedEmployees,
                     totalWorks: totalWorks
-                }];
+                };
 
-                // Send the response
                 res.send(hrStats);
             } catch (error) {
                 console.error('Error fetching HR stats:', error);
                 res.status(500).send({ message: 'Internal Server Error' });
             }
         });
+
+        // Admin stast
+        app.get('/adminStat',  async (req, res) => {
+            try {
+                const employeeQuery = { role: "employee" };
+                const employees = await usersCollection.find(employeeQuery).toArray();
+                const totalEmployees = employees.length;
+                const hrQuery = { role: "hr" };
+                const hrEmployees = await usersCollection.find(hrQuery).toArray();
+                const totalHr = hrEmployees.length;
+                const messages = await messageCollection.find().toArray();
+                const totalMessages = messages.length;
+                const hrStats = [{
+                    totalEmployees: totalEmployees,
+                    totalhr: totalHr,
+                    totalmsg: totalMessages
+                }];
+
+                res.send(hrStats);
+            } catch (error) {
+                console.error('Error fetching HR stats:', error);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
+
 
 
         // Send a ping to confirm a successful connection
