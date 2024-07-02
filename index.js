@@ -40,7 +40,7 @@ const verifyToken = async (req, res, next) => {
     })
 }
 
-//db url
+// mongo db url
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.q3baw43.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const client = new MongoClient(uri, {
